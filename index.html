@@ -1,134 +1,734 @@
 <!DOCTYPE html>
-<html lang="km">
+<html lang="km" class="dark">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Cambodian PPSHV Expressway Co., Ltd. - Staff Rotation</title>
-  <script src="https://cdn.tailwindcss.com"></script>
-  <script src="https://telegram.org/js/telegram-web-app.js"></script>
-  <link href="https://fonts.googleapis.com/css2?family=Kantumruy+Pro:wght@400;500;600;700&display=swap" rel="stylesheet">
-  <style>
-    body { font-family: 'Kantumruy Pro', sans-serif; }
-  </style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Enterprise Staff & Desk Rotation TMA</title>
+    <!-- Telegram WebApp SDK -->
+    <script src="https://telegram.org/js/telegram-web-app.js"></script>
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Lucide Icons -->
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <!-- Google Fonts for Khmer -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Kantumruy+Pro:ital,wght@0,300;0,400;0,500;0,600;0,700;1,400&family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    colors: {
+                        brand: {
+                            50: '#eff6ff',
+                            100: '#dbeafe',
+                            400: '#60a5fa',
+                            500: '#3b82f6',
+                            600: '#2563eb',
+                            700: '#1d4ed8',
+                        },
+                        dark: {
+                            bg: '#0b0f19',
+                            card: '#111827',
+                            cardHover: '#1f2937',
+                            border: '#1f293d',
+                            subtle: '#374151'
+                        }
+                    },
+                    fontFamily: {
+                        khmer: ['Kantumruy Pro', 'sans-serif'],
+                        sans: ['Plus Jakarta Sans', 'sans-serif'],
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        body {
+            font-family: 'Kantumruy Pro', sans-serif;
+            background-color: #0b0f19;
+            color: #f3f4f6;
+            -webkit-tap-highlight-color: transparent;
+        }
+        .glass-panel {
+            background: rgba(17, 24, 39, 0.75);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+        }
+        .glass-card {
+            background: #111827;
+            border: 1px solid #1f293d;
+        }
+        .active-tab {
+            background: rgba(37, 99, 235, 0.15);
+            border-color: #3b82f6;
+            color: #60a5fa;
+        }
+        /* Custom scrollbars */
+        ::-webkit-scrollbar {
+            width: 4px;
+            height: 4px;
+        }
+        ::-webkit-scrollbar-track {
+            background: #0b0f19;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #1f293d;
+            border-radius: 4px;
+        }
+    </style>
 </head>
-<body class="bg-slate-50 text-slate-800 min-h-screen pb-10">
+<body class="min-h-screen pb-24 font-khmer selection:bg-blue-600 selection:text-white">
 
-  <!-- Header Section -->
-  <header class="bg-[#0B2F64] text-white p-4 shadow-lg sticky top-0 z-30">
-    <div class="max-w-md mx-auto flex items-center justify-between">
-      <div class="flex items-center space-x-3">
-        <div class="w-10 h-10 bg-white rounded-lg p-1 flex items-center justify-center shadow">
-          <span class="text-[#0B2F64] font-bold text-xl">H</span>
+    <!-- Top Executive Navigation Bar -->
+    <header class="glass-panel sticky top-0 z-40 border-b border-gray-800/80 px-4 py-3 shadow-xl">
+        <div class="max-w-md mx-auto flex justify-between items-center">
+            <div class="flex items-center gap-3">
+                <div class="w-9 h-9 rounded-xl bg-gradient-to-tr from-blue-600 to-indigo-500 flex items-center justify-center text-white shadow-lg shadow-blue-500/20">
+                    <i data-lucide="layers" class="w-5 h-5"></i>
+                </div>
+                <div>
+                    <div class="flex items-center gap-1.5">
+                        <h1 class="font-bold text-sm tracking-tight text-gray-100">Enterprise Shift OS</h1>
+                        <span class="px-1.5 py-0.2 text-[9px] font-extrabold uppercase tracking-wider bg-blue-500/10 text-blue-400 border border-blue-500/20 rounded">v2.5</span>
+                    </div>
+                    <p class="text-[11px] text-gray-400 font-medium" id="current-date-khmer">កំពុងផ្ទុក...</p>
+                </div>
+            </div>
+
+            <!-- Admin Authentication Trigger -->
+            <button id="admin-btn" onclick="openAdminModal()" class="flex items-center gap-1.5 bg-gray-800/80 hover:bg-gray-700/80 active:scale-95 px-3 py-1.5 rounded-xl text-xs font-semibold border border-gray-700 text-gray-300 transition-all shadow-sm">
+                <i data-lucide="shield-check" class="w-3.5 h-3.5 text-blue-400"></i>
+                <span id="admin-btn-text">Admin</span>
+            </button>
         </div>
-        <div>
-          <h1 class="font-bold text-sm tracking-wide leading-tight">CAMBODIAN PPSHV</h1>
-          <p class="text-[10px] text-amber-400 font-medium">EXPRESSWAY CO., LTD.</p>
+    </header>
+
+    <!-- Main Content Container -->
+    <main class="max-w-md mx-auto p-4 space-y-4">
+
+        <!-- Date & Calendar Controller -->
+        <section class="glass-card rounded-2xl p-3 shadow-lg flex items-center justify-between gap-2">
+            <button onclick="changeDate(-1)" class="p-2.5 rounded-xl bg-gray-800/80 text-gray-300 hover:bg-gray-700 active:scale-95 transition border border-gray-700/50">
+                <i data-lucide="chevron-left" class="w-4 h-4"></i>
+            </button>
+            <div class="text-center flex-1">
+                <input type="date" id="date-picker" onchange="onDateSelected(this.value)" class="bg-transparent font-bold text-center text-sm focus:outline-none cursor-pointer text-blue-400 tracking-wide font-sans">
+                <div id="day-summary-count" class="text-[10px] font-medium text-gray-400 mt-0.5">កំពុងគណនា...</div>
+            </div>
+            <button onclick="changeDate(1)" class="p-2.5 rounded-xl bg-gray-800/80 text-gray-300 hover:bg-gray-700 active:scale-95 transition border border-gray-700/50">
+                <i data-lucide="chevron-right" class="w-4 h-4"></i>
+            </button>
+            <button onclick="resetToToday()" class="p-2 rounded-xl bg-blue-600/20 text-blue-400 text-xs font-bold hover:bg-blue-600/30 active:scale-95 transition border border-blue-500/30 flex items-center gap-1">
+                <i data-lucide="calendar" class="w-3.5 h-3.5"></i>
+                ថ្ងៃនេះ
+            </button>
+        </section>
+
+        <!-- Executive Metrics KPI Summary -->
+        <section class="grid grid-cols-4 gap-2">
+            <div class="glass-card p-2.5 rounded-xl text-center space-y-0.5">
+                <span class="text-[10px] font-semibold text-gray-400 block">បុគ្គលិក</span>
+                <span class="text-base font-extrabold text-white font-sans" id="metric-total">7</span>
+            </div>
+            <div class="glass-card p-2.5 rounded-xl text-center space-y-0.5 border-amber-500/20 bg-amber-500/5">
+                <span class="text-[10px] font-semibold text-amber-400 block">🌅 ព្រឹក</span>
+                <span class="text-base font-extrabold text-amber-300 font-sans" id="metric-morning">0</span>
+            </div>
+            <div class="glass-card p-2.5 rounded-xl text-center space-y-0.5 border-indigo-500/20 bg-indigo-500/5">
+                <span class="text-[10px] font-semibold text-indigo-400 block">🌙 យប់</span>
+                <span class="text-base font-extrabold text-indigo-300 font-sans" id="metric-night">0</span>
+            </div>
+            <div class="glass-card p-2.5 rounded-xl text-center space-y-0.5 border-rose-500/20 bg-rose-500/5">
+                <span class="text-[10px] font-semibold text-rose-400 block">🔴 សម្រាក</span>
+                <span class="text-base font-extrabold text-rose-300 font-sans" id="metric-off">0</span>
+            </div>
+        </section>
+
+        <!-- Dynamic Navigation Tabs -->
+        <section class="flex bg-gray-900/90 p-1 rounded-2xl border border-gray-800">
+            <button id="tab-daily-btn" onclick="switchTab('daily')" class="flex-1 py-2 rounded-xl text-xs font-bold transition flex items-center justify-center gap-1.5 active-tab">
+                <i data-lucide="layout-grid" class="w-3.5 h-3.5"></i>
+                តារាងប្រចាំថ្ងៃ
+            </button>
+            <button id="tab-weekly-btn" onclick="switchTab('weekly')" class="flex-1 py-2 rounded-xl text-xs font-bold text-gray-400 hover:text-gray-200 transition flex items-center justify-center gap-1.5">
+                <i data-lucide="calendar-range" class="w-3.5 h-3.5"></i>
+                ប្រវត្តិ ៧ ថ្ងៃ
+            </button>
+            <button id="tab-admin-btn" onclick="switchTab('admin')" class="flex-1 py-2 rounded-xl text-xs font-bold text-gray-400 hover:text-gray-200 transition flex items-center justify-center gap-1.5">
+                <i data-lucide="sliders" class="w-3.5 h-3.5"></i>
+                គ្រប់គ្រង Admin
+            </button>
+        </section>
+
+        <!-- VIEW TAB 1: DAILY SCHEDULE VIEW -->
+        <div id="view-daily" class="space-y-3">
+            <!-- Search & Filter Filter -->
+            <div class="relative">
+                <i data-lucide="search" class="w-4 h-4 absolute left-3 top-1/2 -translate-y-1/2 text-gray-400"></i>
+                <input type="text" id="staff-search-input" onkeyup="filterDailyCards()" placeholder="ស្វែងរកឈ្មោះ ឬតុធ្វើការ..." class="w-full bg-gray-900 border border-gray-800 rounded-xl pl-9 pr-3 py-2 text-xs text-gray-200 placeholder-gray-500 focus:outline-none focus:border-blue-500">
+            </div>
+
+            <!-- Dynamic Staff Cards Container -->
+            <div class="space-y-2.5" id="staff-assignments-container">
+                <!-- Dynamic Content Rendered Here -->
+            </div>
         </div>
-      </div>
-      <button onclick="toggleAdminMode()" id="adminBtn" class="bg-amber-500 hover:bg-amber-600 text-[#0B2F64] font-bold px-3 py-1.5 rounded-lg text-xs transition-all flex items-center gap-1 shadow">
-        🔒 Staff
-      </button>
-    </div>
-  </header>
 
-  <!-- Main Container -->
-  <main class="max-w-md mx-auto p-4 space-y-4">
+        <!-- VIEW TAB 2: WEEKLY MATRIX VIEW -->
+        <div id="view-weekly" class="hidden space-y-3">
+            <div class="glass-card rounded-2xl p-3 space-y-3 overflow-hidden">
+                <div class="flex items-center justify-between">
+                    <h3 class="text-xs font-bold text-gray-300 flex items-center gap-1.5">
+                        <i data-lucide="calendar" class="w-4 h-4 text-blue-400"></i>
+                        តារាងវេនធ្វើការប្រចាំសប្តាហ៍ (Weekly Matrix)
+                    </h3>
+                    <span class="text-[10px] text-gray-400">៧ ថ្ងៃបន្ទាប់</span>
+                </div>
+                <div class="overflow-x-auto">
+                    <table class="w-full text-left text-[11px] border-collapse" id="weekly-matrix-table">
+                        <!-- Rendered by JS -->
+                    </table>
+                </div>
+            </div>
+        </div>
 
-    <!-- Action Bar -->
-    <div class="bg-white rounded-xl p-3 shadow-sm border border-slate-200 flex justify-between items-center">
-      <div>
-        <p class="text-xs text-slate-500">កាលវិភាគថ្ងៃនេះ</p>
-        <p id="currentDateText" class="text-sm font-bold text-[#0B2F64]"></p>
-      </div>
-      <div class="flex gap-2">
-        <button onclick="rotateDesks()" class="bg-[#0B2F64] text-white px-3 py-1.5 rounded-lg text-xs font-semibold hover:bg-blue-900 transition flex items-center gap-1">
-          🔄 ផ្លាស់ប្តូរវេន
-        </button>
-      </div>
-    </div>
+        <!-- VIEW TAB 3: ADMIN PORTAL TAB -->
+        <div id="view-admin" class="hidden space-y-3">
+            <div class="glass-card rounded-2xl p-4 space-y-4">
+                <div class="flex items-center justify-between border-b border-gray-800 pb-3">
+                    <div class="flex items-center gap-2">
+                        <div class="w-8 h-8 rounded-lg bg-blue-500/10 text-blue-400 flex items-center justify-center">
+                            <i data-lucide="lock" class="w-4 h-4"></i>
+                        </div>
+                        <div>
+                            <h3 class="font-bold text-sm text-gray-200">Admin Control Center</h3>
+                            <p class="text-[10px] text-gray-400">គ្រប់គ្រង Shift Phase & Manual Desk Swaps</p>
+                        </div>
+                    </div>
+                    <span id="admin-status-chip" class="text-[10px] font-bold px-2 py-0.5 rounded-full bg-rose-500/10 text-rose-400 border border-rose-500/20">Locked</span>
+                </div>
 
-    <!-- Desk List -->
-    <div class="space-y-3" id="deskContainer">
-      <!-- Desks rendered via JS -->
-    </div>
+                <div id="admin-locked-view" class="text-center py-6 space-y-3">
+                    <p class="text-xs text-gray-400">សូមបញ្ជាក់លេខកូដសម្ងាត់ Admin ដើម្បីបើកដំណើរការផ្ទាំងនេះ</p>
+                    <button onclick="openAdminModal()" class="bg-blue-600 hover:bg-blue-500 text-white font-bold text-xs px-5 py-2.5 rounded-xl transition shadow-lg shadow-blue-600/20">
+                        បញ្ចូល Password Admin (8888)
+                    </button>
+                </div>
 
-  </main>
+                <div id="admin-unlocked-view" class="hidden space-y-4">
+                    <!-- Shift Phase Alignment -->
+                    <div class="space-y-2">
+                        <label class="text-xs font-bold text-gray-300 block">១. កំណត់ Shift Start Phase (6-Day Cycle)</label>
+                        <div id="admin-staff-offsets-list" class="space-y-2">
+                            <!-- JS Generated -->
+                        </div>
+                    </div>
 
-  <script>
-    // Updated Desks List with exact names requested
-    const defaultDesks = [
-      { id: 1, name: 'កែផ្លាកលេខ', staff: 'សុខា', role: 'បុគ្គលិក', isFixed: true },
-      { id: 2, name: 'ទូA', staff: 'ដារ៉ា', role: 'បុគ្គលិក', isFixed: false },
-      { id: 3, name: 'ទូB', staff: 'វ៉ាន់នី', role: 'បុគ្គលិក', isFixed: false },
-      { id: 4, name: 'ទូC', staff: 'ម៉ៅ', role: 'បុគ្គលិក', isFixed: false },
-      { id: 5, name: 'សវនកម្ម', staff: 'ណារី', role: 'បុគ្គលិក', isFixed: false },
-      { id: 6, name: 'ទូស្ថានីយ៍', staff: 'ទីណា', role: 'បុគ្គលិក', isFixed: false },
-      { id: 7, name: 'Excel', staff: 'បូរី', role: 'បុគ្គលិក', isFixed: false }
-    ];
+                    <hr class="border-gray-800">
 
-    let desks = JSON.parse(localStorage.getItem('expressway_desks')) || defaultDesks;
-    let isAdmin = false;
+                    <!-- Manual Desk Swap -->
+                    <div class="space-y-2">
+                        <label class="text-xs font-bold text-gray-300 block">២. ដោះដូរតុភ្លាមៗប្រចាំថ្ងៃ (Swap Desks)</label>
+                        <div class="grid grid-cols-2 gap-2">
+                            <select id="swap-staff-1" class="w-full text-xs p-2.5 rounded-xl border border-gray-800 bg-gray-900 text-gray-200 font-medium"></select>
+                            <select id="swap-staff-2" class="w-full text-xs p-2.5 rounded-xl border border-gray-800 bg-gray-900 text-gray-200 font-medium"></select>
+                        </div>
+                        <button onclick="executeSwap()" class="w-full py-2.5 bg-indigo-600 hover:bg-indigo-500 text-white text-xs font-bold rounded-xl transition flex items-center justify-center gap-1.5 shadow-md shadow-indigo-600/20">
+                            <i data-lucide="arrow-left-right" class="w-3.5 h-3.5"></i>
+                            ផ្លាស់ប្តូរតុរវាងបុគ្គលិកទាំង ២ នាក់
+                        </button>
+                    </div>
 
-    function saveState() {
-      localStorage.setItem('expressway_desks', JSON.stringify(desks));
-      renderDesks();
-    }
+                    <hr class="border-gray-800">
 
-    function renderDesks() {
-      const container = document.getElementById('deskContainer');
-      container.innerHTML = '';
+                    <!-- Reset Options -->
+                    <button onclick="resetSettings()" class="w-full py-2 bg-rose-500/10 text-rose-400 border border-rose-500/20 text-xs font-bold rounded-xl hover:bg-rose-500/20 transition flex items-center justify-center gap-1.5">
+                        <i data-lucide="rotate-ccw" class="w-3.5 h-3.5"></i>
+                        ស្ដារការកំណត់ដើម (Reset Defaults)
+                    </button>
+                </div>
+            </div>
+        </div>
 
-      desks.forEach((desk, idx) => {
-        const card = document.createElement('div');
-        card.className = `bg-white rounded-xl p-4 shadow-sm border ${desk.isFixed ? 'border-amber-400 bg-amber-50/30' : 'border-slate-200'} flex items-center justify-between transition-all`;
-        
-        card.innerHTML = `
-          <div class="flex items-center space-x-3">
-            <div class="w-10 h-10 rounded-xl ${desk.isFixed ? 'bg-amber-500 text-white' : 'bg-[#0B2F64] text-white'} flex items-center justify-center font-bold text-sm shadow-sm">
-              ${idx + 1}
+        <!-- Telegram Action Footer Bar -->
+        <section class="pt-2">
+            <button onclick="shareToTelegram()" class="w-full bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-500 hover:to-indigo-500 active:scale-[0.98] text-white py-3.5 px-4 rounded-2xl font-bold text-xs shadow-xl shadow-blue-600/25 flex items-center justify-center gap-2 transition border border-blue-400/20">
+                <i data-lucide="send" class="w-4 h-4"></i>
+                ផ្ញើបញ្ជីវេន និងតុចូល Telegram Group
+            </button>
+        </section>
+    </main>
+
+    <!-- Password Modal -->
+    <div id="password-modal" class="fixed inset-0 bg-black/80 backdrop-blur-md z-50 hidden flex items-center justify-center p-4">
+        <div class="glass-card rounded-3xl p-6 w-full max-w-xs shadow-2xl space-y-4 border border-gray-800">
+            <div class="text-center space-y-1">
+                <div class="w-12 h-12 bg-blue-500/10 text-blue-400 rounded-2xl flex items-center justify-center mx-auto mb-2 border border-blue-500/20">
+                    <i data-lucide="shield-alert" class="w-6 h-6"></i>
+                </div>
+                <h3 class="font-bold text-base text-gray-100">ការផ្ទៀងផ្ទាត់ Admin</h3>
+                <p class="text-[11px] text-gray-400">បញ្ចូលលេខកូដសម្ងាត់ ៤ ខ្ទង់ (Default: 8888)</p>
             </div>
             <div>
-              <div class="flex items-center gap-2">
-                <span class="font-bold text-[#0B2F64] text-base">${desk.name}</span>
-                ${desk.isFixed ? '<span class="bg-amber-100 text-amber-800 text-[10px] font-semibold px-2 py-0.5 rounded-full border border-amber-300">🔒 តុថេរ</span>' : ''}
-              </div>
-              <p class="text-xs text-slate-600 font-medium">${desk.staff} • <span class="text-slate-400">${desk.role}</span></p>
+                <input type="password" id="admin-pass-input" maxlength="4" placeholder="••••" class="w-full text-center text-2xl font-bold tracking-widest py-3 rounded-2xl border border-gray-800 bg-gray-900 text-white focus:outline-none focus:border-blue-500 font-sans">
             </div>
-          </div>
-        `;
-        container.appendChild(card);
-      });
-    }
+            <div id="pass-error-msg" class="text-[11px] text-rose-400 text-center font-semibold hidden">លេខកូដមិនត្រឹមត្រូវទេ!</div>
+            <div class="flex gap-2">
+                <button onclick="closePasswordModal()" class="w-1/2 py-2.5 rounded-xl border border-gray-800 text-xs font-semibold hover:bg-gray-800 transition text-gray-400">បោះបង់</button>
+                <button onclick="verifyPassword()" class="w-1/2 py-2.5 rounded-xl bg-blue-600 text-white text-xs font-bold hover:bg-blue-500 transition shadow-md shadow-blue-600/20">ចូលគណនី</button>
+            </div>
+        </div>
+    </div>
 
-    function rotateDesks() {
-      const fixedDesk = desks[0];
-      const rotatingDesks = desks.slice(1);
-      
-      const last = rotatingDesks.pop();
-      rotatingDesks.unshift(last);
+    <!-- Notification Toast -->
+    <div id="toast" class="fixed bottom-6 left-1/2 -translate-x-1/2 bg-gray-900 text-gray-100 text-xs font-medium px-4 py-2.5 rounded-full shadow-2xl border border-gray-700 opacity-0 pointer-events-none transition-all duration-300 z-50 flex items-center gap-2">
+        <i data-lucide="check-circle-2" class="w-4 h-4 text-emerald-400"></i>
+        <span id="toast-text">ជោគជ័យ</span>
+    </div>
 
-      const newStaffList = [fixedDesk.staff, ...rotatingDesks.map(d => d.staff)];
-      const newRolesList = [fixedDesk.role, ...rotatingDesks.map(d => d.role)];
+    <script>
+        // Telegram WebApp Setup
+        const tg = window.Telegram?.WebApp;
+        if (tg) {
+            tg.ready();
+            tg.expand();
+        }
 
-      desks.forEach((d, i) => {
-        d.staff = newStaffList[i];
-        d.role = newRolesList[i];
-      });
+        // Staff Initial Master Definitions
+        const STAFF_MEMBERS = [
+            { id: 1, name: "LY SOKUNPANHA", role: "ប្រធានក្រុម", isFixed: true, fixedDesk: "សវនកម្ម", avatarBg: "from-emerald-600 to-teal-700" },
+            { id: 2, name: "LY PANHANALL", role: "អនុប្រធាន", isFixed: false, avatarBg: "from-purple-600 to-indigo-700" },
+            { id: 3, name: "LUN CHANDARA", role: "បុគ្គលិកកាមេរ៉ា", isAdmin: true, isFixed: false, avatarBg: "from-blue-600 to-cyan-700" },
+            { id: 4, name: "MUY LONGDY", role: "បុគ្គលិកកាមេរ៉ា", isFixed: false, avatarBg: "from-amber-600 to-orange-700" },
+            { id: 5, name: "POV CHAIYA", role: "បុគ្គលិកកាមេរ៉ា", isFixed: false, avatarBg: "from-rose-600 to-pink-700" },
+            { id: 6, name: "DAIM KUNTHEA", role: "បុគ្គលិកកាមេរ៉ា", isFixed: false, avatarBg: "from-teal-600 to-emerald-700" },
+            { id: 7, name: "SEA VICHKA", role: "បុគ្គលិកកាមេរ៉ា", isFixed: false, avatarBg: "from-indigo-600 to-purple-700" }
+        ];
 
-      saveState();
-    }
+        // 6 Rotating Desks
+        const ROTATING_DESKS = ["Excel", "ទូA", "ទូB", "ទូC", "ទូស្ថានីយ៍", "កែផ្លាកលេខ"];
 
-    function toggleAdminMode() {
-      isAdmin = !isAdmin;
-      const btn = document.getElementById('adminBtn');
-      btn.innerHTML = isAdmin ? '🔓 Admin' : '🔒 Staff';
-      btn.className = isAdmin 
-        ? 'bg-emerald-500 hover:bg-emerald-600 text-white font-bold px-3 py-1.5 rounded-lg text-xs transition-all flex items-center gap-1 shadow'
-        : 'bg-amber-500 hover:bg-amber-600 text-[#0B2F64] font-bold px-3 py-1.5 rounded-lg text-xs transition-all flex items-center gap-1 shadow';
-    }
+        const KHMER_DAYS = ["អាទិត្យ", "ច័ន្ទ", "អង្គារ", "ពុធ", "ព្រហស្បតិ៍", "សុក្រ", "សៅរ៍"];
+        const KHMER_MONTHS = ["មករា", "កុម្ភៈ", "មីនា", "មេសា", "ឧសភា", "មិថុនា", "កក្កដា", "សីហា", "កញ្ញា", "តុលា", "វិច្ឆិកា", "ធ្នូ"];
+        const KHMER_NUMBERS = ['០', '១', '២', '៣', '៤', '៥', '៦', '៧', '៨', '៩'];
 
-    document.getElementById('currentDateText').innerText = new Date().toLocaleDateString('km-KH', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' });
-    renderDesks();
-  </script>
+        let selectedDate = new Date();
+        let isAdminLoggedIn = false;
+        const BASE_DATE = new Date(2025, 0, 1);
+
+        const defaultStaffOffsets = { 1: 0, 2: 0, 3: 1, 4: 2, 5: 3, 6: 4, 7: 5 };
+
+        let staffOffsets = JSON.parse(localStorage.getItem('office_shift_offsets')) || defaultStaffOffsets;
+        let customSwaps = JSON.parse(localStorage.getItem('office_swaps_v2')) || {};
+
+        function toKhmerNum(num) {
+            return num.toString().split('').map(n => KHMER_NUMBERS[n] || n).join('');
+        }
+
+        function formatKhmerDate(date) {
+            const dayName = KHMER_DAYS[date.getDay()];
+            const dayNum = toKhmerNum(date.getDate());
+            const monthName = KHMER_MONTHS[date.getMonth()];
+            const yearNum = toKhmerNum(date.getFullYear());
+            return `ថ្ងៃ${dayName} ទី${dayNum} ខែ${monthName} ឆ្នាំ${yearNum}`;
+        }
+
+        function getDaysDiff(d1, d2) {
+            const t1 = new Date(d1.getFullYear(), d1.getMonth(), d1.getDate());
+            const t2 = new Date(d2.getFullYear(), d2.getMonth(), d2.getDate());
+            return Math.floor((t2 - t1) / (1000 * 60 * 60 * 24));
+        }
+
+        function getShiftForStaff(staffId, date) {
+            const daysPassed = getDaysDiff(BASE_DATE, date);
+            const offset = staffOffsets[staffId] || 0;
+            
+            let cycleIndex = (daysPassed + offset) % 6;
+            if (cycleIndex < 0) cycleIndex += 6;
+
+            if (cycleIndex === 0 || cycleIndex === 1) {
+                return { key: 'MORNING', label: '🌅 ព្រឹក', bgClass: 'bg-amber-500/10 text-amber-400 border-amber-500/20' };
+            } else if (cycleIndex === 2 || cycleIndex === 3) {
+                return { key: 'NIGHT', label: '🌙 យប់', bgClass: 'bg-indigo-500/10 text-indigo-400 border-indigo-500/20' };
+            } else {
+                return { key: 'OFF', label: '🔴 សម្រាក', bgClass: 'bg-rose-500/10 text-rose-400 border-rose-500/20' };
+            }
+        }
+
+        function getDailySchedule(date) {
+            const dateStr = date.toISOString().split('T')[0];
+            const daysPassed = getDaysDiff(BASE_DATE, date);
+
+            let results = [];
+            let workingRotatingStaff = [];
+
+            STAFF_MEMBERS.forEach(staff => {
+                const shift = getShiftForStaff(staff.id, date);
+                
+                if (staff.isFixed) {
+                    const desk = (shift.key !== 'OFF') ? staff.fixedDesk : 'សម្រាក (គ្មានតុ)';
+                    results.push({ staff, shift, desk });
+                } else {
+                    if (shift.key !== 'OFF') {
+                        workingRotatingStaff.push({ staff, shift });
+                    } else {
+                        results.push({ staff, shift, desk: 'សម្រាក (គ្មានតុ)' });
+                    }
+                }
+            });
+
+            workingRotatingStaff.forEach((item, index) => {
+                let rotateShift = Math.abs(daysPassed);
+                let deskIndex = (index + rotateShift) % ROTATING_DESKS.length;
+                results.push({
+                    staff: item.staff,
+                    shift: item.shift,
+                    desk: ROTATING_DESKS[deskIndex]
+                });
+            });
+
+            if (customSwaps[dateStr]) {
+                customSwaps[dateStr].forEach(s => {
+                    const idx1 = results.findIndex(r => r.staff.id === s.staff1Id);
+                    const idx2 = results.findIndex(r => r.staff.id === s.staff2Id);
+                    if (idx1 !== -1 && idx2 !== -1) {
+                        const tempDesk = results[idx1].desk;
+                        results[idx1].desk = results[idx2].desk;
+                        results[idx2].desk = tempDesk;
+                    }
+                });
+            }
+
+            results.sort((a, b) => a.staff.id - b.staff.id);
+            return results;
+        }
+
+        function renderUI() {
+            const dateStr = selectedDate.toISOString().split('T')[0];
+            document.getElementById('date-picker').value = dateStr;
+            document.getElementById('current-date-khmer').textContent = formatKhmerDate(selectedDate);
+
+            const schedule = getDailySchedule(selectedDate);
+
+            let morningCount = schedule.filter(s => s.shift.key === 'MORNING').length;
+            let nightCount = schedule.filter(s => s.shift.key === 'NIGHT').length;
+            let offCount = schedule.filter(s => s.shift.key === 'OFF').length;
+
+            document.getElementById('metric-total').textContent = toKhmerNum(7);
+            document.getElementById('metric-morning').textContent = toKhmerNum(morningCount);
+            document.getElementById('metric-night').textContent = toKhmerNum(nightCount);
+            document.getElementById('metric-off').textContent = toKhmerNum(offCount);
+
+            document.getElementById('day-summary-count').textContent = 
+                `ព្រឹក: ${toKhmerNum(morningCount)} | យប់: ${toKhmerNum(nightCount)} | សម្រាក: ${toKhmerNum(offCount)}`;
+
+            renderDailyCards(schedule);
+            renderWeeklyMatrix();
+            populateSwapDropdowns();
+            renderAdminOffsetInputs();
+        }
+
+        function renderDailyCards(schedule) {
+            const container = document.getElementById('staff-assignments-container');
+            container.innerHTML = '';
+
+            schedule.forEach(item => {
+                const initials = item.staff.name.split(' ').map(n => n[0]).join('');
+                const isOff = item.shift.key === 'OFF';
+                
+                const card = document.createElement('div');
+                card.className = "glass-card rounded-2xl p-3.5 flex items-center justify-between gap-3 hover:border-gray-700 transition daily-staff-card";
+                card.setAttribute('data-name', item.staff.name.toLowerCase());
+                card.setAttribute('data-desk', item.desk.toLowerCase());
+
+                const adminBadge = item.staff.isAdmin ? '<span class="bg-blue-500/10 text-blue-400 border border-blue-500/20 text-[9px] font-bold px-1.5 py-0.2 rounded">Admin</span>' : '';
+                const fixedBadge = item.staff.isFixed ? '<span class="bg-amber-500/10 text-amber-400 border border-amber-500/20 text-[9px] font-bold px-1.5 py-0.2 rounded">តុអចិន្ត្រៃយ៍</span>' : '';
+
+                card.innerHTML = `
+                    <div class="flex items-center gap-3 min-w-0">
+                        <div class="w-10 h-10 rounded-xl bg-gradient-to-br ${item.staff.avatarBg} text-white font-bold text-xs flex items-center justify-center shrink-0 shadow-md">
+                            ${initials}
+                        </div>
+                        <div class="min-w-0">
+                            <div class="flex items-center gap-1.5 flex-wrap">
+                                <h4 class="font-bold text-xs truncate text-gray-100">${item.staff.name}</h4>
+                                ${adminBadge}
+                                ${fixedBadge}
+                            </div>
+                            <div class="text-[10px] font-medium text-gray-400 truncate mt-0.5">
+                                💼 ${item.staff.role}
+                            </div>
+                            <div class="mt-1">
+                                <span class="text-[10px] font-bold px-2 py-0.5 rounded-md border ${item.shift.bgClass}">
+                                    ${item.shift.label}
+                                </span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="text-right shrink-0">
+                        <span class="text-[9px] text-gray-400 uppercase tracking-wider block">តុចាត់តាំង</span>
+                        <div class="inline-flex items-center gap-1.5 mt-0.5 ${isOff ? 'bg-gray-900 text-gray-500 border-gray-800' : 'bg-blue-500/10 text-blue-400 border-blue-500/20'} px-2.5 py-1 rounded-xl text-xs font-bold border">
+                            <i data-lucide="${isOff ? 'coffee' : (item.staff.isFixed ? 'pin' : 'layout-grid')}" class="w-3.5 h-3.5"></i>
+                            ${item.desk}
+                        </div>
+                    </div>
+                `;
+                container.appendChild(card);
+            });
+
+            lucide.createIcons();
+        }
+
+        function filterDailyCards() {
+            const query = document.getElementById('staff-search-input').value.toLowerCase();
+            const cards = document.querySelectorAll('.daily-staff-card');
+            cards.forEach(card => {
+                const name = card.getAttribute('data-name');
+                const desk = card.getAttribute('data-desk');
+                if (name.includes(query) || desk.includes(query)) {
+                    card.classList.remove('hidden');
+                } else {
+                    card.classList.add('hidden');
+                }
+            });
+        }
+
+        function renderWeeklyMatrix() {
+            const table = document.getElementById('weekly-matrix-table');
+            if (!table) return;
+
+            let html = `<thead><tr class="border-b border-gray-800 text-gray-400"><th class="py-2 pr-2 font-semibold">បុគ្គលិក</th>`;
+            
+            let dates = [];
+            for (let i = 0; i < 7; i++) {
+                let d = new Date(selectedDate);
+                d.setDate(d.getDate() + i);
+                dates.push(d);
+                const dayStr = KHMER_DAYS[d.getDay()].substring(0, 3);
+                const dateNum = toKhmerNum(d.getDate());
+                html += `<th class="py-2 px-1 text-center font-semibold">${dayStr}<br><span class="text-[9px] text-gray-500">${dateNum}</span></th>`;
+            }
+            html += `</tr></thead><tbody>`;
+
+            STAFF_MEMBERS.forEach(staff => {
+                html += `<tr class="border-b border-gray-800/50"><td class="py-2.5 pr-2 font-bold text-gray-300 text-[10px] truncate max-w-[100px]">${staff.name}</td>`;
+                dates.forEach(d => {
+                    const shift = getShiftForStaff(staff.id, d);
+                    let symbol = '🌅';
+                    if (shift.key === 'NIGHT') symbol = '🌙';
+                    if (shift.key === 'OFF') symbol = '🔴';
+                    html += `<td class="py-2 px-1 text-center text-xs">${symbol}</td>`;
+                });
+                html += `</tr>`;
+            });
+
+            html += `</tbody>`;
+            table.innerHTML = html;
+        }
+
+        function switchTab(tab) {
+            document.getElementById('view-daily').classList.add('hidden');
+            document.getElementById('view-weekly').classList.add('hidden');
+            document.getElementById('view-admin').classList.add('hidden');
+
+            document.getElementById('tab-daily-btn').classList.remove('active-tab');
+            document.getElementById('tab-weekly-btn').classList.remove('active-tab');
+            document.getElementById('tab-admin-btn').classList.remove('active-tab');
+
+            if (tab === 'daily') {
+                document.getElementById('view-daily').classList.remove('hidden');
+                document.getElementById('tab-daily-btn').classList.add('active-tab');
+            } else if (tab === 'weekly') {
+                document.getElementById('view-weekly').classList.remove('hidden');
+                document.getElementById('tab-weekly-btn').classList.add('active-tab');
+            } else if (tab === 'admin') {
+                document.getElementById('view-admin').classList.remove('hidden');
+                document.getElementById('tab-admin-btn').classList.add('active-tab');
+            }
+        }
+
+        function changeDate(days) {
+            selectedDate.setDate(selectedDate.getDate() + days);
+            renderUI();
+        }
+
+        function onDateSelected(val) {
+            if (val) {
+                selectedDate = new Date(val);
+                renderUI();
+            }
+        }
+
+        function resetToToday() {
+            selectedDate = new Date();
+            renderUI();
+        }
+
+        function openAdminModal() {
+            if (!isAdminLoggedIn) {
+                document.getElementById('password-modal').classList.remove('hidden');
+                document.getElementById('admin-pass-input').focus();
+            } else {
+                switchTab('admin');
+            }
+        }
+
+        function closePasswordModal() {
+            document.getElementById('password-modal').classList.add('hidden');
+            document.getElementById('admin-pass-input').value = '';
+            document.getElementById('pass-error-msg').classList.add('hidden');
+        }
+
+        function verifyPassword() {
+            const pass = document.getElementById('admin-pass-input').value;
+            if (pass === '8888') {
+                isAdminLoggedIn = true;
+                closePasswordModal();
+                document.getElementById('admin-btn-text').textContent = "Admin Active";
+                document.getElementById('admin-btn').classList.add('border-emerald-500/40', 'text-emerald-400');
+                document.getElementById('admin-locked-view').classList.add('hidden');
+                document.getElementById('admin-unlocked-view').classList.remove('hidden');
+                document.getElementById('admin-status-chip').textContent = "Unlocked";
+                document.getElementById('admin-status-chip').className = "text-[10px] font-bold px-2 py-0.5 rounded-full bg-emerald-500/10 text-emerald-400 border border-emerald-500/20";
+                showToast("ចូលប្រើប្រាស់ជា Admin ជោគជ័យ!");
+                switchTab('admin');
+            } else {
+                document.getElementById('pass-error-msg').classList.remove('hidden');
+            }
+        }
+
+        function renderAdminOffsetInputs() {
+            const container = document.getElementById('admin-staff-offsets-list');
+            if (!container) return;
+            container.innerHTML = '';
+
+            STAFF_MEMBERS.forEach(staff => {
+                const currentOffset = staffOffsets[staff.id] || 0;
+                const div = document.createElement('div');
+                div.className = "flex items-center justify-between gap-2 bg-gray-900/80 p-2 rounded-xl text-xs border border-gray-800";
+                div.innerHTML = `
+                    <span class="font-bold truncate text-gray-300 text-[11px]">${staff.name}</span>
+                    <select onchange="updateStaffOffset(${staff.id}, this.value)" class="text-[11px] p-1.5 rounded-lg border border-gray-800 bg-gray-950 text-gray-200 font-semibold focus:outline-none">
+                        <option value="0" ${currentOffset === 0 ? 'selected' : ''}>Start Phase 1 (ព្រឹក-1)</option>
+                        <option value="1" ${currentOffset === 1 ? 'selected' : ''}>Start Phase 2 (ព្រឹក-2)</option>
+                        <option value="2" ${currentOffset === 2 ? 'selected' : ''}>Start Phase 3 (យប់-1)</option>
+                        <option value="3" ${currentOffset === 3 ? 'selected' : ''}>Start Phase 4 (យប់-2)</option>
+                        <option value="4" ${currentOffset === 4 ? 'selected' : ''}>Start Phase 5 (សម្រាក-1)</option>
+                        <option value="5" ${currentOffset === 5 ? 'selected' : ''}>Start Phase 6 (សម្រាក-2)</option>
+                    </select>
+                `;
+                container.appendChild(div);
+            });
+        }
+
+        function updateStaffOffset(staffId, val) {
+            staffOffsets[staffId] = parseInt(val);
+            localStorage.setItem('office_shift_offsets', JSON.stringify(staffOffsets));
+            renderUI();
+            showToast("បានបច្ចុប្បន្នភាព Phase វេនរួចរាល់!");
+        }
+
+        function populateSwapDropdowns() {
+            const s1 = document.getElementById('swap-staff-1');
+            const s2 = document.getElementById('swap-staff-2');
+            if (!s1 || !s2) return;
+
+            s1.innerHTML = '';
+            s2.innerHTML = '';
+
+            STAFF_MEMBERS.forEach((staff, index) => {
+                s1.innerHTML += `<option value="${staff.id}">${staff.name}</option>`;
+                s2.innerHTML += `<option value="${staff.id}" ${index === 1 ? 'selected' : ''}>${staff.name}</option>`;
+            });
+        }
+
+        function executeSwap() {
+            const id1 = parseInt(document.getElementById('swap-staff-1').value);
+            const id2 = parseInt(document.getElementById('swap-staff-2').value);
+
+            if (id1 === id2) {
+                showToast("សូមជ្រើសរើសបុគ្គលិក ២ នាក់ផ្សេងគ្នា!");
+                return;
+            }
+
+            const dateStr = selectedDate.toISOString().split('T')[0];
+            if (!customSwaps[dateStr]) {
+                customSwaps[dateStr] = [];
+            }
+
+            customSwaps[dateStr].push({ staff1Id: id1, staff2Id: id2 });
+            localStorage.setItem('office_swaps_v2', JSON.stringify(customSwaps));
+
+            renderUI();
+            showToast("បានផ្លាស់ប្តូរតុជោគជ័យ!");
+        }
+
+        function resetSettings() {
+            if (confirm("តើអ្នកពិតជាចង់ស្ដារការកំណត់វេន និងតុទាំងអស់ទៅដើមវិញមែនទេ?")) {
+                staffOffsets = { ...defaultStaffOffsets };
+                customSwaps = {};
+                localStorage.removeItem('office_shift_offsets');
+                localStorage.removeItem('office_swaps_v2');
+                renderUI();
+                showToast("បានស្ដារការកំណត់ដើមរួចរាល់!");
+            }
+        }
+
+        function shareToTelegram() {
+            const schedule = getDailySchedule(selectedDate);
+            const dateKhmer = formatKhmerDate(selectedDate);
+
+            let msg = `📋 *តារាងវេន និងតុធ្វើការប្រចាំថ្ងៃ*\n`;
+            msg += `📅 ${dateKhmer}\n`;
+            msg += `-----------------------------------\n`;
+
+            schedule.forEach((item, index) => {
+                const shiftEmoji = item.shift.key === 'MORNING' ? '🌅' : (item.shift.key === 'NIGHT' ? '🌙' : '🔴');
+                msg += `${index + 1}. *${item.staff.name}* (${item.staff.role})\n`;
+                msg += `   └ វេន: ${shiftEmoji} *${item.shift.label.replace(/^[^\s]+\s/, '')}* | តុ: *${item.desk}*\n`;
+            });
+
+            msg += `-----------------------------------\n`;
+            msg += `សូមចូលពិនិត្យតាមដានក្នុង Mini App!`;
+
+            if (tg && tg.sendData) {
+                try {
+                    tg.sendData(msg);
+                } catch (e) {
+                    copyToClipboard(msg);
+                }
+            } else {
+                copyToClipboard(msg);
+            }
+        }
+
+        function copyToClipboard(text) {
+            const textarea = document.createElement('textarea');
+            textarea.value = text;
+            document.body.appendChild(textarea);
+            textarea.select();
+            document.execCommand('copy');
+            document.body.removeChild(textarea);
+            showToast("បានចម្លងព័ត៌មានវេន និងតុចូល Clipboard!");
+        }
+
+        function showToast(message) {
+            const toast = document.getElementById('toast');
+            document.getElementById('toast-text').textContent = message;
+            toast.classList.remove('opacity-0', 'pointer-events-none');
+            setTimeout(() => {
+                toast.classList.add('opacity-0', 'pointer-events-none');
+            }, 2500);
+        }
+
+        window.onload = function() {
+            lucide.createIcons();
+            renderUI();
+        };
+    </script>
 </body>
 </html>
